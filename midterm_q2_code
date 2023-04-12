@@ -1,0 +1,30 @@
+#include "stm32f4xx.h"
+
+int main(void)
+{
+
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;  //GPIOD
+
+    // Set GPIO D pin 13 as output
+    GPIOD->MODER |= GPIO_MODER_MODE13_0; // GPIOD pin 13
+
+    RCC->APB2ENR |= RCC_APB2ENR_TIM8EN;  //Timer 8
+
+
+    TIM8->PSC = 2;
+    TIM8->ARR = 65535;
+
+    while (1)
+    {
+        TIM8->CR1 |= TIM_CR1_CEN;
+
+
+        while (TIM8->CNT < 21000); //Duration 21000
+
+
+        TIM8->CR1 &= ~TIM_CR1_CEN; //Reset state
+        TIM8->CNT = 1;
+
+        GPIOD->ODR ^= (1 << 13); //On Board LED 5
+    }
+}
